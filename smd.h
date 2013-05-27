@@ -56,6 +56,8 @@ int wcn36xx_smd_init_scan(struct wcn36xx *wcn);
 int wcn36xx_smd_start_scan(struct wcn36xx *wcn, int ch);
 int wcn36xx_smd_end_scan(struct wcn36xx *wcn, int ch);
 int wcn36xx_smd_finish_scan(struct wcn36xx *wcn);
+int wcn36xx_smd_enter_imps_req(struct wcn36xx *wcn);
+int wcn36xx_smd_exit_imps_req(struct wcn36xx *wcn);
 int wcn36xx_smd_update_scan_params(struct wcn36xx *wcn);
 int wcn36xx_smd_add_sta_self(struct wcn36xx *wcn, u8 *addr, u32 status);
 int wcn36xx_smd_delete_sta_self(struct wcn36xx *wcn, u8 *addr);

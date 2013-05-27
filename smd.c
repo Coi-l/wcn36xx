@@ -277,8 +277,43 @@ static void wcn36xx_smd_switch_channel_rsp(void *buf, size_t len)
 		     rsp->status);
 }
 
-int wcn36xx_smd_update_scan_params(struct wcn36xx *wcn)
+int wcn36xx_smd_enter_imps_req(struct wcn36xx *wcn)
 {
+	struct wcn36xx_hal_enter_imps_rsp_msg msg_body;
+
+	INIT_HAL_MSG(msg_body, WCN36XX_HAL_ENTER_IMPS_REQ);
+
+	PREPARE_HAL_BUF(wcn->smd_buf, msg_body);
+
+	return wcn36xx_smd_send_and_wait(wcn, msg_body.header.len);
+}
+
+static void wcn36xx_smd_enter_imps_rsp(void *buf, size_t len)
+{
+	struct wcn36xx_hal_enter_imps_rsp_msg *rsp;
+	rsp = (struct wcn36xx_hal_enter_imps_rsp_msg *)buf;
+	wcn36xx_dbg(WCN36XX_DBG_HAL, "Enter imps rsp status: %d", rsp->status);
+}
+
+int wcn36xx_smd_exit_imps_req(struct wcn36xx *wcn)
+{
+	struct wcn36xx_hal_exit_imps_rsp_msg msg_body;
+
+	INIT_HAL_MSG(msg_body, WCN36XX_HAL_EXIT_IMPS_REQ);
+
+	PREPARE_HAL_BUF(wcn->smd_buf, msg_body);
+
+	return wcn36xx_smd_send_and_wait(wcn, msg_body.header.len);
+}
+
+static void wcn36xx_smd_exit_imps_rsp(void *buf, size_t len)
+{
+	struct wcn36xx_hal_exit_imps_rsp_msg *rsp;
+	rsp = (struct wcn36xx_hal_exit_imps_rsp_msg *)buf;
+	wcn36xx_dbg(WCN36XX_DBG_HAL, "Exit imps rsp status: %d", rsp->status);
+}
+
+int wcn36xx_smd_update_scan_params(struct wcn36xx *wcn){
 	struct wcn36xx_hal_update_scan_params_req msg_body;
 
 	INIT_HAL_MSG(msg_body, WCN36XX_HAL_UPDATE_SCAN_PARAM_REQ);
@@ -301,6 +336,7 @@ int wcn36xx_smd_update_scan_params(struct wcn36xx *wcn)
 
 	return wcn36xx_smd_send_and_wait(wcn, msg_body.header.len);
 }
+
 static int wcn36xx_smd_update_scan_params_rsp(void *buf, size_t len)
 {
 	struct wcn36xx_hal_update_scan_params_resp *rsp;
@@ -1075,6 +1111,12 @@ static void wcn36xx_smd_rsp_process(struct wcn36xx *wcn, void *buf, size_t len)
 		break;
 	case WCN36XX_HAL_OTA_TX_COMPL_IND:
 		wcn36xx_smd_tx_compl_ind(wcn, buf, len);
+		break;
+	case WCN36XX_HAL_ENTER_IMPS_RSP:
+		wcn36xx_smd_enter_imps_rsp(buf, len);
+		break;
+	case WCN36XX_HAL_EXIT_IMPS_RSP:
+		wcn36xx_smd_exit_imps_rsp(buf, len);
 		break;
 	default:
 		wcn36xx_error("SMD_EVENT (%d) not supported", msg_header->msg_type);
